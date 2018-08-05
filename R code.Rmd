@@ -1,0 +1,485 @@
+---
+title: "Batch 35_CUTe20171217"
+date: "14 December 2017"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+* Remove all environment variables
+```{r}
+rm(list = ls(all=T))
+
+```
+
+#Read the input files train and test and preprocess
+
+* get and set working directory
+```{r}
+getwd()
+
+train_data<-read.csv("train_data.csv")
+test_data<-read.csv("test_data.csv")
+
+```
+
+
+* Summary and structure of dataset
+
+
+```{r}
+str(train_data)
+summary(train_data)
+
+head(train_data)
+tail(train_data)
+
+sum(is.na(train_data))
+colSums(is.na(train_data))
+train_data<-train_data[,colSums(is.na(train_data))/nrow(train_data)<= 0.30]
+
+dim(train_data)
+
+```
+* impute missing values
+
+```{r}
+library(DMwR)
+
+# train_knm<-knnImputation(train_data,k = 5,scale = T)
+# 
+train_data<-knnImputation(train_data,k = 5,scale = T)
+# 
+# train_knm<-knnImputation(train_data_o,k = 5,scale = T)
+# 
+sum(is.na(train_data))
+# 
+# ?knnImputation
+
+```
+
+
+* finding Outliers for ....
+
+```{r}
+
+#train_data$f_12>=10.3518515
+
+train_data_o<-train_data
+train_data_o[train_data_o$f_12>=10.3518515,c("f_12")]<-10.3518515
+
+# c(quantile(train_data$f_12,0.25)-1.5*IQR(train_data$f_12),
+# quantile(train_data$f_12,0.75)+1.5*IQR(train_data$f_12))
+# 
+# quantile(train_data_o$f_12,probs = c(0,0.01,0.02,0.05,0.1,0.25,0.5,0.75,0.77,0.78,0.79,0.8,0.85,0.86,0.87,0.88,0.89,0.9,0.95,0.98,0.99,1)) 
+
+# 0.1953137-1.5*(3.0082521-0.1953137)
+# 3.0082521+1.5*(3.0082521-0.1953137)
+
+##train_data$f_34>=5.171999
+
+train_data_o[train_data_o$f_34>=5.171999,c("f_34")]<-5.171999
+
+# c(quantile(train_data$f_34,0.25)-1.5*IQR(train_data$f_34),
+# quantile(train_data$f_34,0.75)+1.5*IQR(train_data$f_34))
+# 
+# quantile(train_data_o$f_34,probs = c(0,0.01,0.02,0.05,0.1,0.25,0.5,0.75,0.85,0.86,0.87,0.88,0.89,0.9,0.95,0.98,0.99,1)) 
+
+#train_data$f_32 -2.57259102<= 0.7841052>=
+
+train_data_o[train_data_o$f_32<=-2.57259102,c("f_32")]<--2.57259102
+train_data_o[train_data_o$f_32>=0.7841052,c("f_32")]<-0.7841052
+# 
+# c(quantile(train_data$f_32,0.25)-1.5*IQR(train_data$f_32),
+# quantile(train_data$f_32,0.75)+1.5*IQR(train_data$f_32))
+# 
+# quantile(train_data$f_32,probs = c(0,0.01,0.02,0.05,0.06,0.07,0.08,0.1,0.11,0.12,0.13,0.16,0.25,0.5,0.75,0.85,0.86,0.87,0.88,0.89,0.9,0.91,0.92,0.93,0.94,0.95,0.98,0.99,1)) 
+
+#train_data$f_10>=3.31610088
+
+train_data_o[train_data_o$f_10>=3.31610088,c("f_10")]<-3.31610088
+
+# c(quantile(train_data$f_10,0.25)-1.5*IQR(train_data$f_10),
+# quantile(train_data$f_10,0.75)+1.5*IQR(train_data$f_10))
+# 
+# quantile(train_data$f_10,probs = c(0,0.01,0.02,0.05,0.1,0.25,0.5,0.75,0.85,0.86,0.87,0.88,0.89,0.9,0.95,0.98,0.99,1)) 
+
+#train_data$d_2<=-1.158012 >=1.401602
+
+train_data_o[train_data_o$d_2<=-1.158012,c("d_2")]<--1.158012
+train_data_o[train_data_o$d_2>=1.401602,c("d_2")]<-1.401602
+
+# c(quantile(train_data$d_2,0.25)-1.5*IQR(train_data$d_2),
+# quantile(train_data$d_2,0.75)+1.5*IQR(train_data$d_2))
+# 
+# quantile(train_data_o$d_2,probs = c(0,0.01,0.02,0.05,0.1,0.25,0.5,0.75,0.85,0.86,0.87,0.88,0.89,0.9,0.95,0.98,0.99,1)) 
+
+
+#train_data$d_2<=-1.158012 >=1.401602
+
+train_data_o[train_data_o$f_23>=14.788271,c("f_23")]<-14.788271
+
+# c(quantile(train_data$f_23,0.25)-1.5*IQR(train_data$f_23),
+# quantile(train_data$f_23,0.75)+1.5*IQR(train_data$f_23))
+# 
+# quantile(train_data_o$f_23,probs = c(0,0.01,0.02,0.05,0.1,0.25,0.5,0.75,0.85,0.86,0.87,0.88,0.89,0.9,0.93,0.94,0.95,0.98,0.99,1)) 
+
+#train_data$f_51<=--3.0441152096 >=0.6865031
+
+train_data_o[train_data_o$f_51<=-3.0441152096,c("f_51")]<--3.0441152096
+train_data_o[train_data_o$f_51>=0.6865031,c("f_51")]<-0.6865031
+
+# c(quantile(train_data$f_51,0.25)-1.5*IQR(train_data$f_51),
+# quantile(train_data$f_51,0.75)+1.5*IQR(train_data$f_51))
+
+# quantile(train_data_o$f_51,probs = c(0,0.01,0.02,0.05,0.1,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.25,0.5,0.75,0.85,0.86,0.87,0.88,0.89,0.9,0.91,0.92,0.93,0.94,0.95,0.98,0.99,1)) 
+
+```
+
+
+```{r}
+# str(train_knm)
+# colnames(train_knm)
+# train_knm_y1<-train_knm[,-98]
+# train_knm_y2<-train_knm[,-97]
+
+table(train_data_o$y2)
+train_data_o$y2<-as.factor(train_data_o$y2)
+
+# train_knm_y2$y2<- as.factor(train_knm_y2$y2)
+# train_knm_y2$y3<-train_data$y2
+
+# train_knm_y2[train_knm_y2$y3=="1",98]<-"yes"
+# train_knm_y2[train_knm_y2$y3=="0",98]<-"no"
+# table(train_knm_y2$y2)
+# train_knm_y2$y3=NULL
+# train_knm_y2$y2<-train_knm_y2$y3
+# 
+# train_knm_y2$y2<-as.factor(train_knm_y2$y2)
+# 
+# tail(train_knm_y2)
+# dim(train_knm_y2)
+
+# plot(train_knm_y2[,1:97],train_knm_y2$y2)
+
+
+# library(corrplot)
+# corrplot(cor(house_data,use="complete.obs"),method = "number")
+# 
+# write.csv(cor(train_knm,use="complete.obs"),"cor.csv")
+
+```
+* pca for multicollinear columns
+
+```{r}
+## standardizing the data
+
+cols<-c('timestamp','d_3','d_4','f_0','f_2','f_8','f_11','f_16','f_23','f_24','f_36','f_47','f_48','f_49','f_50','f_53','f_55','f_56','t_7')
+
+pca<-prcomp(train_data_o[,cols],scale. = T,center = T)
+
+summary(pca)
+
+train_data_o<-cbind(train_data_o,as.data.frame(pca$x[,c(1:5)]))
+
+#colnames(train_data_y1)
+
+```
+
+* splitting train data into 70 and 30 
+
+```{r}
+
+# splitrows<-sample(1:nrow(train_knm_y1),0.7*nrow(train_knm_y1))
+
+colnames(train_data_o)
+
+library(caret)
+
+rows<-createDataPartition(train_data_o$y2,p=0.7,list = FALSE)
+splitrows<-sample(1:nrow(train_data_o),0.7*nrow(train_data_o))
+
+train_data_y2<-train_data_o[rows,-97]
+test_data_y2<-train_data_o[-rows,-97]
+
+train_data_y1<-train_data_o[splitrows,]
+test_data_y1<-train_data_o[-splitrows,]
+
+dim(train_data_y1)
+dim(test_data_y1)
+
+dim(train_data_y2)
+dim(test_data_y2)
+
+
+```
+#Basic Modelling Logistic
+
+```{r}
+
+model_lgstic<-glm(y2 ~ .,data = train_data_y2,family =binomial)
+
+# model_lgstic<-glm.fit(train_data_y2[,-97],train_data_y2$y2,family = binomial())
+# 
+# head(train_data_y2)
+# colnames(train_data_y2)
+
+# base_model<-lm(log(y1)~.,data = train_data_y1)
+
+summary(model_lgstic)
+
+# write.csv( colnames(train_data_y2),"write.csv")
+
+#####t_9,t_10,t_16,t_22,t_29,t_34,
+
+# pairs(y2~t_36+t_37+t_38+t_39+t_40+t_41+t_42+t_43+t_44+y2,data = train_data_y2)
+# 
+# pairs(y2~f_55,train_data_y2)
+# 
+# pairs(y2~t_9+t_10+t_16+t_22+t_29+t_34,data = train_data_y2)
+# 
+# table(train_data_y2$t_9,train_data_y2$y2)
+# 
+# ?plot
+
+```
+* model step wise AIC on base model
+```{r}
+library(MASS)
+##model_AIC<- stepAIC(base_model,direction="both")
+
+model_AIC<- stepAIC(model_lgstic,direction="both")
+
+summary(model_AIC)
+
+```
+* finding collinearity attributes
+
+```{r}
+library(car)
+
+vif(model_lgstic)
+
+```
+##Second model from vif features
+* by removing high value vif value and running next model
+
+```{r}
+
+### -f_55 - f_36 -f_56 -f_47
+# Aic_lgstc<-glm(formula = y2 ~ d_2+f_22+f_22+f_30+f_33+f_34+f_41+f_43+f_62+t_1+t_5+t_6+t_9+t_12+t_13+t_16+t_17+t_18+t_20+t_24+t_30+t_32+t_33+t_34+t_37+t_41,family = binomial, data = train_data_y2)
+
+# final_model_lnr<-lm(formula = log(y1) ~ d_2+f_22+f_22+f_30+f_33+f_34+f_41+f_43+f_62+t_1+t_5+t_6+t_9+t_12+t_13+t_16+t_17+t_18+t_20+t_24+t_30+t_32+t_33+t_34+t_37+t_41,data = train_data_y1)
+
+# summary(final_model_lnr)
+
+library(usdm)
+#install.packages("usdm")
+
+vifstep(train_data_y2[,c(-1,-97)],th=2)
+
+dim(train_data_y2)
+# summary(model_base2)
+
+```
+
+* - f_32 variable
+
+```{r}
+# model_base3<-lm(y1 ~ timestamp + d_1 + d_2 + d_4 + f_16 + 
+#     f_18 + f_19 + f_21 + f_22 + f_30 + f_34 + f_39 + f_41 + 
+#     f_42 + f_44 + f_46 + f_47 + f_49 + f_51 + f_55 + f_60 + f_62 + 
+#     t_0 + t_3 + t_7 + t_10 + t_13 + t_16 + t_20 + t_21 + t_24 + 
+#     t_25 + t_27 + t_30 + t_31 + t_33 + t_34 + t_35 + t_36 + t_38 + 
+#     t_39 + t_40 + d_3 + f_9, data = train_data_y1)
+# 
+# vif(model_base3)
+# summary(model_base3)
+
+```
+```{r}
+# - timestamp from the model
+
+# model_base3<-lm(log(y1) ~ d_1 + d_2 + d_4 + f_16 + 
+#     f_18 + f_19 + f_21 + f_22 + f_30 + f_34 + f_39 + f_41 + 
+#     f_42 + f_44 + f_46 + f_47 + f_49 + f_51 + f_55 + f_60 + f_62 + 
+#     t_0 + t_3 + t_7 + t_10 + t_13 + t_16 + t_20 + t_21 + t_24 + 
+#     t_25 + t_27 + t_30 + t_31 + t_33 + t_34 + t_35 + t_36 + t_38 + 
+#     t_39 + t_40 + d_3 + f_9, data = train_data_y1)
+# 
+# vif(model_base3)
+# summary(model_base3)
+
+model_vif<-glm(y2~f_22+f_30+f_33+f_41+f_43+f_44+f_62+t_0+t_1+t_3+t_5+t_6+t_9+t_12+t_13+t_16+t_17+t_18+t_20+t_24+t_30+t_32+t_33+t_37+t_41+t_42,family = binomial, data = train_data_y2)
+
+summary(model_vif)
+```
+```{r}
+model_vif_aic<-stepAIC(model_vif,direction = "both")
+
+summary(model_vif_aic)
+```
+
+* Byusing base model AIC
+
+```{r}
+
+preds<-predict(model_AIC,test_data_y2,type="response")
+
+preds_A<-ifelse(preds>0.5,1,0)
+
+confusionMatrix(test_data_y2$y2,preds_A)
+
+
+```
+* byusing vif modelaic 
+
+```{r}
+
+predsv<-predict(model_vif_aic,test_data_y2,type="response")
+
+preds_Av<-ifelse(preds>0.5,1,0)
+
+confusionMatrix(test_data_y2$y2,preds_Av)
+
+```
+
+
+** By droping the variables the model explination(adjusted R square value) is keep on decreasing 
+
+Approach should change
+
+
+#pca analysis
+
+```{r}
+
+# cols<-c('timestamp','d_3','d_4','f_0','f_2','f_8','f_11','f_16','f_23','f_24','f_36','f_47','f_48','f_49','f_50','f_53','f_55','f_56','t_7')
+# 
+# pca<-prcomp(train_data_y2[,cols],scale. = T,center = T)
+# 
+# summary(pca)
+
+```
+
+* prepare data and try bas emodel with all columns
+
+
+```{r}
+
+# train_data_y2<-cbind(train_data_y2,as.data.frame(pca$x[,c(1:5)]))
+# 
+# colnames(train_data_y2)
+# # head(as.data.frame(pca$x[,c(1:5)]))
+# # train_data_y1_p<-cbind(as.data.frame(pca$x[]),train_data_y1$y1)
+# 
+# # colnames(train_data_y1_p)[97]<-paste("y1")
+# 
+# #colnames(train_data_y1_p)
+# ?lm
+              
+```
+
+```{r}
+
+model_pca<-glm(formula = y2 ~ f_30 + f_33 + f_41 + f_43 + f_44 + f_62 + 
+    t_1 + t_5 + t_6 + t_9 + t_13 + t_17 + t_18 + t_20 + t_30 + 
+    t_33 + t_37 + t_42+PC1+PC2+PC3+PC4+PC5, family = binomial, data = train_data_y2)
+
+summary(model_pca)
+```
+#Y1 variable Regression
+
+```{r}
+
+base_model<-lm(y1~.,data = train_data_y1)
+
+summary(base_model)
+
+### adjusted R Squeare value 7%
+```
+```{r}
+
+base_aic_reg<-stepAIC(base_model,direction = "both")
+
+summary(base_aic_reg)
+
+### adjusted R Squeare value 9%
+```
+
+* with vif variables regression
+
+```{r}
+model_vif_reg<-lm(y1~timestamp+f_30 + f_33 + f_41 + f_43 + f_44 + f_62 + 
+    t_1 + t_5 + t_6 + t_9 + t_13 + t_17 + t_18 + t_20 + t_30 + 
+    t_33 + t_37 + t_42,data = train_data_y1)
+
+summary(model_vif_reg)
+##with select variables Adjust R square 0.6%
+
+```
+*By combination of pca variables with vif variables
+
+```{r}
+# # cols<-c('timestamp','d_3','d_4','f_0','f_2','f_8','f_11','f_16','f_23','f_24','f_36','f_47','f_48','f_49','f_50','f_53','f_55','f_56','t_7')
+# 
+# pca<-prcomp(train_data_y1[,cols],scale. = T,center = T)
+# 
+# summary(pca)
+# 
+# train_data_y1<-cbind(train_data_y1,as.data.frame(pca$x[,c(1:6)]))
+# 
+# colnames(train_data_y1)
+
+```
+* PCAon test data
+
+```{r}
+pca<-prcomp(train_data_y1[,cols],scale. = T,center = T)
+
+summary(pca)
+
+train_data_y1<-cbind(train_data_y1,as.data.frame(pca$x[,c(1:6)]))
+
+colnames(train_data_y1)
+
+```
+
+* regression by combining with pcs components
+
+```{r}
+
+model_pca_reg<-lm(y1~timestamp+f_30 + f_33 + f_41 + f_43 + f_44 + f_62 + 
+    t_1 + t_5 + t_6 + t_9 + t_13 + t_17 + t_18 + t_20 + t_30 + 
+    t_33 + t_37 + t_42+PC1+PC2+PC3+PC4+PC5+PC6,data = train_data_y1)
+
+summary(model_pca_reg)
+
+```
+
+
+```{r}
+
+preds_p<-predict(model_pca,train_data_y2,type="response")
+
+preds_pv<-ifelse(preds_p>0.5,1,0)
+
+confusionMatrix(train_data_y2$y2,preds_pv)
+
+```
+
+```{r}
+
+model_pca<-lm(log(y1)~.,data = train_data_y1_p)
+
+summary(model_pca)
+```
+
+```{r}
+model_aic_p<-stepAIC(model_pca,direction = "both")
+
+summary(model_aic_p)
+
+```
+
